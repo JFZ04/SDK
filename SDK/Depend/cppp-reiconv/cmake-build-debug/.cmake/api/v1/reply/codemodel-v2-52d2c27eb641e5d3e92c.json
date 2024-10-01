@@ -1,0 +1,121 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-8723c504fc5874973a65.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				},
+				{
+					"build" : "build-aux",
+					"jsonFile" : "directory-build-aux-Debug-bb082175f1a306ed9a89.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "build-aux",
+					"targetIndexes" : 
+					[
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "cppp-reiconv",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "build-aux",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "build_nls_cppp-reiconv::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-build_nls_cppp-reiconv-Debug-2af9c78fbed5be77ed28.json",
+					"name" : "build_nls_cppp-reiconv",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "libcppp-reiconv.shared::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-libcppp-reiconv.shared-Debug-f62950e179650baa1a3b.json",
+					"name" : "libcppp-reiconv.shared",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "libcppp-reiconv.static::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-libcppp-reiconv.static-Debug-61347519aaf770a9b142.json",
+					"name" : "libcppp-reiconv.static",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "uninstall::@6e7864f7e2dc2af86243",
+					"jsonFile" : "target-uninstall-Debug-150014dd963c5806868c.json",
+					"name" : "uninstall",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug",
+		"source" : "D:/Project/cppp-reiconv-v2.1.0"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

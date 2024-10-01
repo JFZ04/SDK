@@ -1,0 +1,306 @@
+/**
+ * @file cppp/reiconv.hpp
+ * @author ChenPi11
+ * @brief C++ Plus cppp-reiconv package.
+ * @version 2.1.0
+ * @date 2023-7-28
+ * @copyright Copyright (C) 1999-2023 Free Software Foundation, Inc.
+ */
+/* 版权所有 (C) 1999-2023 Free Software Foundation, Inc.
+   本文件是 cppp-reiconv 库的一部分。
+
+   cppp-reiconv 库是自由软件，您可以在自由软件基金会发布的 GNU Lesser General Public
+   License 版本 3 或者（根据您的选择）任何以后的版本下重新分发和/或修改它。
+
+   cppp-reiconv 库被分发，希望它对您有用，但没有任何担保；甚至没有暗示的担保
+   商业性和特定目的适用性的担保。请参阅 GNU Lesser General Public License 获取更多详细信息。
+
+   您应该已经收到了 GNU Lesser General Public License 的副本
+   与 cppp-reiconv 库一起；请参阅 COPYING 文件。
+   如果没有，请参阅 https://www.gnu.org/licenses/ 。  */
+
+/* 安装之后，这个文件叫做 “cppp/reiconv.hpp”。 */
+
+#ifndef _CPPP_REICONV_HPP
+#define _CPPP_REICONV_HPP
+
+#if _MSC_VER >= 1600 
+/* 使用 UTF-8 解析这个文件 */
+#pragma execution_character_set("utf-8")
+#endif
+
+#include <exception>
+#include <iostream>
+#include <errno.h>
+#include <time.h>
+#include <vector>
+#include <wchar.h>
+
+extern "C++"
+{
+    namespace cppp
+    {
+    namespace base
+    {
+    namespace reiconv
+    {
+    /**
+     * @brief 版本信息。 算法：(major<<8) + minor
+     */
+    extern __declspec(dllimport) int reiconv_version;
+
+#undef iconv_t
+    /**
+     * @typedef void*
+     * @brief 从一个字符集到另一个字符集中的转换方法的标识符。
+     */
+    typedef void *iconv_t;
+
+#undef iconv_open
+    /**
+     * @brief 为从编码 “fromcode” 到编码 “tocode” 的编码转换分配描述符。
+     * @param tocode 目标编码。
+     * @param fromcode 原编码。
+     * @return 分配的 iconv 描述符。
+     */
+    extern __declspec(dllimport) iconv_t iconv_open(const char *tocode, const char *fromcode);
+
+    /**
+     * @brief 为从代码页 “fromcode_cp” 到代码页 “tocode_cp” 的编码转换分配描述符。
+     * @param tocode_cp Target codepage.
+     * @param fromcode_cp From codepage.
+     * @param strict Strict mode, if false, will ignore the invalid characters.
+     * @note Some encoding may don't have codepage.
+     * @return Allocated iconv conversation buffer's pointer.
+     */
+    extern __declspec(dllimport) iconv_t iconv_open(int tocode_cp, int fromcode_cp, bool strict = true);
+
+#undef iconv
+    /**
+     * @brief 使用转换描述符 “cd”，将最多 “*inbytesleft” 字节从 “*inbuf” 开始转换，并将最多 “*outbytesleft” 字节写入 
+     * “*outbuf” 。
+     * @attention 将 “*inbytesleft” 减少相同的数量，并将 “*inbuf” 增加相同的数量。
+     * @attention 将 “*outbytesleft” 减少相同的数量，并将 “*outbuf” 增加相同的数量。
+     * @param cd 转换描述符。
+     * @param inbuf 输入缓冲区。
+     * @param inbytesleft 剩余输入字节。
+     * @param outbuf 输出缓冲区。
+     * @param outbytesleft 剩余输出字节。
+     * @return 转换的字符数量（不包括终止符，-1 表示错误）。
+     */
+    extern __declspec(dllimport) size_t iconv(iconv_t cd, char **inbuf, size_t *inbytesleft, char **outbuf,
+                                       size_t *outbytesleft);
+
+#undef iconv_close
+    /**
+     * @brief 释放为转换描述符 “cd” 分配的资源。
+     * @param cd 您想要释放的 iconv 转换描述符。
+     * @return 操作状态。（-1 表示错误，0 表示成功）。
+     */
+    extern __declspec(dllimport) int iconv_close(iconv_t cd);
+
+    /**
+     * @brief 设置描述符的属性
+     * @param cd 转换描述符。
+     * @param request 属性请求 ID。
+     * @param argument 属性的值。
+     * @return 操作状态（>=0 表示成功，<0 表示错误）。
+     */
+    extern __declspec(dllimport) int iconvctl(iconv_t cd, int request, void *argument);
+
+    /**
+     * @typedef void (*) (unsigned int, void*)
+     * @brief 在每次成功转换 Unicode 字符之后执行的钩子函数。
+     */
+    typedef void (*iconv_unicode_char_hook)(unsigned int uc, void *data);
+
+    /**
+     * @brief 钩子函数集。
+     */
+    struct iconv_hooks
+    {
+        iconv_unicode_char_hook uc_hook;
+        void *data;
+    };
+
+    /**
+     * @brief 回调函数。当少量字节无法转换为 Unicode 字符时调用。
+     *        此函数应处理 “inbuf” 中的所有字节，并通过多次调用 “write_replacement” 回调函数生成替换的 Unicode 字符。
+     */
+    typedef void (*iconv_unicode_mb_to_uc_fallback)(const char *inbuf, size_t inbufsize,
+                                                    void (*write_replacement)(const unsigned int *buf, size_t buflen,
+                                                                              void *callback_arg),
+                                                    void *callback_arg, void *data);
+
+    /**
+     * @brief 回调函数。在无法将 Unicode 字符转换为目标编码时调用。
+     *        此函数应处理字符，并可通过重复调用 “write_replacement” 回调来生成替代字节（使用目标编码）。
+     */
+    typedef void (*iconv_unicode_uc_to_mb_fallback)(unsigned int code,
+                                                    void (*write_replacement)(const char *buf, size_t buflen,
+                                                                              void *callback_arg),
+                                                    void *callback_arg, void *data);
+
+    /**
+     * @brief 回调函数集。
+     */
+    struct iconv_fallbacks
+    {
+        iconv_unicode_mb_to_uc_fallback mb_to_uc_fallback;
+        iconv_unicode_uc_to_mb_fallback uc_to_mb_fallback;
+        void *data;
+    };
+
+    /**
+     * @brief Surfaces. “Surfaces” 是在 “recode” 手册中描述的概念。
+     */
+    constexpr int ICONV_SURFACE_NONE = 0;
+    /**
+     * @brief 在 EBCDIC 编码中，0x15（用于编码“换行符功能”，参见 Unicode 标准第 5 章）将映射为 U+000A 而不是 U+0085 。
+     *        这是为了在 z/OS 上与 C 程序和 Unix 环境实现互操作性。
+     */
+    constexpr int ICONV_SURFACE_EBCDIC_ZOS_UNIX = 1;
+
+    /**
+     * @brief “iconvctl” 的 “request”.
+     */
+    constexpr int ICONV_TRIVIALP = 0; /* int *argument */
+    /**
+     * @brief “iconvctl” 的 “request”.
+     */
+    constexpr int ICONV_GET_DISCARD_ILSEQ = 3; /* int *argument */
+    /**
+     * @brief “iconvctl” 的 “request”.
+     */
+    constexpr int ICONV_SET_DISCARD_ILSEQ = 4; /* const int *argument */
+    /**
+     * @brief “iconvctl” 的 “request”.
+     */
+    constexpr int ICONV_SET_HOOKS = 5; /* const struct iconv_hooks *argument */
+    /**
+     * @brief “iconvctl” 的 “request”.
+     */
+    constexpr int ICONV_SET_FALLBACKS = 6; /* const struct iconv_fallbacks *argument */
+    /**
+     * @brief “iconvctl” 的 “request”.
+     */
+    constexpr int ICONV_GET_FROM_SURFACE = 7; /* unsigned int *argument */
+    /**
+     * @brief “iconvctl” 的 “request”.
+     */
+    constexpr int ICONV_SET_FROM_SURFACE = 8; /* const unsigned int *argument */
+    /**
+     * @brief “iconvctl” 的 “request”.
+     */
+    constexpr int ICONV_GET_TO_SURFACE = 9; /* unsigned int *argument */
+    /**
+     * @brief “iconvctl” 的 “request”.
+     */
+    constexpr int ICONV_SET_TO_SURFACE = 10; /* const unsigned int *argument */
+
+    /**
+     * @brief 列出与区域设置无关的编码方式。
+     * @param do_one 一个编码回退函数。
+     * @param data 数据。
+     */
+    extern __declspec(dllimport) void iconvlist(int (*do_one)(unsigned int namescount, const char *const *names, void *data),
+                                          void *data);
+
+    /**
+     * @brief 使用 iconv 将整个字符串从一种编码转换为另一种编码。比直接使用 iconv() 函数更简单。
+     * @note 该函数不特殊处理 '\0' 字符。
+     * @param cd 转换描述符。
+     * @param start 源字符串起始指针。
+     * @param end 源字符串结束指针。
+     * @param resultp 结果内存指针。
+     * @param lengthp 指向存储结果长度的变量的指针。
+     * @return 如果成功，返回 0 ，否则返回 errno 并设置 errno 。特定的 errno 值包括 EILSEQ 和 ENOMEM 。
+     */
+    extern __declspec(dllimport) int iconv_string(const iconv_t& cd, const char *start,
+                                            const char *end, char **resultp, size_t *lengthp);
+    
+    /**
+     * @brief 将整个字符串从一种编码转换为另一种编码，并支持自动检测输入编码。
+     *
+     * @note 将以编码 FROMCODE 给出的内存区域转换为以编码 TOCODE 给出的新内存区域。 FROMCODE 和 TOCODE 与 iconv_open(3) 中的参数相同，但 FROMCODE 可能是以下值之一。
+     *
+     * @note "autodetect_utf8" 支持 ISO-8859-1 和 UTF-8
+     * @note "autodetect_jp" 支持 EUC-JP 、 ISO-2022-JP-2和 SHIFT_JIS
+     * @note "autodetect_kr" 支持 EUC-KR 和 ISO-2022-KR
+     * @note 输入位于 start （包含）和 end （不包含）之间的内存区域。如果 resultp 不为 NULL ，则输出字符串存储在 *resultp 中； malloc/realloc 用于分配结果。
+     *
+     * @note 该函数不特殊处理零字符。
+     * @param tocode 目标编码。
+     * @param fromcode 源编码。
+     * @param start 源字符串起始指针。
+     * @param end 源字符串结束指针。
+     * @param resultp 结果内存指针。
+     * @param lengthp 指向存储结果长度的变量的指针。
+     * @return 如果成功，返回0；否则返回 errno 并设置 errno 。特定的 errno 值包括 EILSEQ 和 ENOMEM 。
+     *
+     * @example
+     *   const char* s = ...;
+     *   char* result = NULL;
+     *   if (iconv_string("UCS-4-INTERNAL", "GBK",
+     *                    s, s+strlen(s)+1, &result, NULL) != 0)
+     *   perror("iconv_string");
+     *
+     */
+    extern __declspec(dllimport) int iconv_string(const char* tocode, const char* fromcode, const char* start,
+                                            const char* end, char** resultp, size_t* lengthp);
+
+    /**
+     * @brief 将整个字符串从一种编码转换为另一种编码。
+     * @note 该函数不特殊处理零字符。
+     * @param tocode_cp 目标编码页。
+     * @param fromcode_cp 源编码页。
+     * @param start 源字符串起始指针。
+     * @param end 源字符串结束指针。
+     * @param resultp 结果内存指针。
+     * @param lengthp 指向存储结果长度的变量的指针。
+     * @param strict 严格模式，如果为 false ，将忽略无效字符。
+     * @return 如果成功，返回 0 ；否则返回 errno 并设置 errno 。特定的 errno 值包括 EILSEQ 和 ENOMEM 。
+     *
+     * @example
+     *   const char* s = ...;
+     *   char* result = NULL;
+     *   if (iconv_string(65001, 936,
+     *                    s, s+strlen(s)+1, &result, NULL) != 0)
+     *   perror("iconv_string");
+     *
+     */
+    extern __declspec(dllimport) int iconv_string(int tocode_cp, int fromcode_cp, const char* start,
+                                            const char* end, char** resultp, size_t* lengthp, bool strict=true);
+
+    /**
+     * @brief 将源字符串编码为另一种编码方式。
+     * @param from 源编码。
+     * @param to 目标编码。
+     * @param data 输入字符串数据。
+     * @param ignore 忽略无效字符。
+     * @throw int：当转换错误时，抛出 “errno” ，您可以捕获 errno 以获取更多信息。
+     */
+    inline std::vector<char> encode(const std::string& from, const std::string& to, const std::vector<char>& data,
+                                    bool ignore = false)
+    {
+        char *result = NULL;
+        size_t length = 0;
+        std::string ignstr = ignore ? "//IGNORE" : "";
+        if (iconv_string((to + ignstr).c_str(), from.c_str(), data.data(), data.data() + data.size(), &result,
+                         &length) < 0)
+        {
+            if (!ignore)
+            {
+                /* When conversation error, throw the errno, you can catch the errno for more infomation. */
+                throw(int)(errno);
+            }
+        }
+        return std::vector<char>(result, result + length);
+    }
+
+    } // namespace reiconv
+    } // namespace base
+    } // namespace cppp
+}
+
+#endif /* _CPPP_REICONV_HPP */

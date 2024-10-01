@@ -1,0 +1,16 @@
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/CMakeFiles/build_nls_cppp-reiconv.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/CMakeFiles/libcppp-reiconv.shared.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/CMakeFiles/libcppp-reiconv.static.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/CMakeFiles/list_install_components.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/CMakeFiles/install.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/CMakeFiles/install/local.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/CMakeFiles/install/strip.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/build-aux/CMakeFiles/uninstall.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/build-aux/CMakeFiles/edit_cache.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/build-aux/CMakeFiles/rebuild_cache.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/build-aux/CMakeFiles/list_install_components.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/build-aux/CMakeFiles/install.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/build-aux/CMakeFiles/install/local.dir
+D:/Project/cppp-reiconv-v2.1.0/cmake-build-debug/build-aux/CMakeFiles/install/strip.dir
