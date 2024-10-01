@@ -96,8 +96,8 @@ if (UIAPIS)
                 ${LINK_DIR}/libcppp-reiconv.static.a
                 GUIAPI crypto
 #                ${PROJECT_SOURCE_DIR}/SDK/Depend/mysql-9.0.1/lib/LinuxLib/libmysqlclient.so
-                ${PROJECT_SOURCE_DIR}/SDK/Depend/mysql-9.0.1/lib/LinuxLib/lib64/libmysqlcppconn.so
-                ${PROJECT_SOURCE_DIR}/SDK/Depend/mysql-9.0.1/lib/LinuxLib/lib64/libmysqlcppconnx.so
+                ${PROJECT_SOURCE_DIR}/SDK/Depend/mysql-9.0.1/lib/LinuxLib/libmysqlcppconn.so
+                ${PROJECT_SOURCE_DIR}/SDK/Depend/mysql-9.0.1/lib/LinuxLib/libmysqlcppconnx.so
         )
     elseif(CMAKE_HOST_WIN32)
         target_link_libraries(CC_API PRIVATE ws2_32 libcserialport

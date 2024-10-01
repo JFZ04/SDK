@@ -1,4 +1,5 @@
 #include "MainRun.h"
+#include "CCMySql.h"
 
 bool MainRun::Init() {
     CORS Cors = CORS();
